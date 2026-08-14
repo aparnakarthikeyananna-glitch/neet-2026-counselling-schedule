@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEET UG Counselling Tracker - MCC vs TN Medical</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-mcc: #38bdf8;
+      --accent-tn: #34d399;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    button.secondary:hover {
+      background: #334155;
+    }
+
+    /* Config Modal / Panel */
+    #configPanel {
+      display: none;
+      background: var(--card-bg);
+      border-bottom: 2px solid var(--border);
+      padding: 1rem 1.5rem;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .input-group input {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    /* Split Container */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background-color: var(--border);
+      height: calc(100vh - 65px);
+    }
+
+    .panel {
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .panel-header {
+      padding: 0.6rem 1rem;
+      background: var(--card-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .panel-mcc .panel-title { color: var(--accent-mcc); }
+    .panel-tn .panel-title { color: var(--accent-tn); }
+
+    .panel-actions a {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-decoration: none;
+      margin-left: 0.5rem;
+    }
+
+    .panel-actions a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    .viewer-frame {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    /* Fallback Bar if embed blocks iframe direct embed */
+    .proxy-notice {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 0.25rem 1rem;
+      background: #111827;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        overflow-y: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <span>🩺 NEET UG Counselling Dashboard</span>
+    </div>
+    <div class="controls">
+      <span id="autoRefreshStatus" style="font-size: 0.8rem; color: var(--text-muted);">Auto-refresh: 15m</span>
+      <button class="secondary" onclick="toggleConfig()">⚙️ Configure Links</button>
+      <button onclick="refreshBoth()">🔄 Refresh Viewers</button>
+    </div>
+  </header>
+
+  <!-- Configuration Bar -->
+  <div id="configPanel">
+    <div class="input-group">
+      <label for="mccUrlInput">MCC (AIQ 15%) PDF URL</label>
+      <input type="text" id="mccUrlInput" placeholder="https://..." />
+    </div>
+    <div class="input-group">
+      <label for="tnUrlInput">TN State Selection PDF URL</label>
+      <input type="text" id="tnUrlInput" placeholder="https://..." />
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <button onclick="saveAndApplyLinks()">Save & Apply</button>
+      <button class="secondary" onclick="resetDefaults()">Reset</button>
+    </div>
+  </div>
+
+  <!-- Side-by-Side Dual Viewport -->
+  <main>
+    <!-- MCC Panel -->
+    <div class="panel panel-mcc">
+      <div class="panel-header">
+        <span class="panel-title">🏛️ MCC Round 1 AIQ Schedule</span>
+        <div class="panel-actions">
+          <a id="mccOpenTab" href="#" target="_blank" rel="noopener">Open Original ↗</a>
+        </div>
+      </div>
+      <iframe id="mccFrame" class="viewer-frame" src=""></iframe>
+    </div>
+
+    <!-- TN Medical Panel -->
+    <div class="panel panel-tn">
+      <div class="panel-header">
+        <span class="panel-title">🏥 TN Medical Round 1 State Schedule</span>
+        <div class="panel-actions">
+          <a id="tnOpenTab" href="#" target="_blank" rel="noopener">Open Original ↗</a>
+        </div>
+      </div>
+      <iframe id="tnFrame" class="viewer-frame" src=""></iframe>
+    </div>
+  </main>
+
+  <script>
+    const DEFAULT_MCC = "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608131187512522.pdf";
+    const DEFAULT_TN = "https://tnmedicalselection.net/news/12082026045717.pdf";
+
+    // Load URLs from localStorage or use defaults
+    function getStoredUrls() {
+      return {
+        mcc: localStorage.getItem("mcc_pdf_url") || DEFAULT_MCC,
+        tn: localStorage.getItem("tn_pdf_url") || DEFAULT_TN
+      };
+    }
+
+    // Embed via Google Docs Viewer fallback to avoid browser CORS/X-Frame-Options blocks
+    function formatEmbedUrl(rawUrl) {
+      return "https://docs.google.com/viewer?embedded=true&url=" + encodeURIComponent(rawUrl);
+    }
+
+    function renderViewers() {
+      const urls = getStoredUrls();
+
+      // Set Input fields
+      document.getElementById("mccUrlInput").value = urls.mcc;
+      document.getElementById("tnUrlInput").value = urls.tn;
+
+      // Set External Tab Links
+      document.getElementById("mccOpenTab").href = urls.mcc;
+      document.getElementById("tnOpenTab").href = urls.tn;
+
+      // Update Frames with timestamp query to prevent browser caching
+      const bust = "&_t=" + new Date().getTime();
+      document.getElementById("mccFrame").src = formatEmbedUrl(urls.mcc) + bust;
+      document.getElementById("tnFrame").src = formatEmbedUrl(urls.tn) + bust;
+    }
+
+    function toggleConfig() {
+      const panel = document.getElementById("configPanel");
+      panel.style.display = (panel.style.display === "grid") ? "none" : "grid";
+    }
+
+    function saveAndApplyLinks() {
+      const mccVal = document.getElementById("mccUrlInput").value.trim();
+      const tnVal = document.getElementById("tnUrlInput").value.trim();
+
+      if (mccVal) localStorage.setItem("mcc_pdf_url", mccVal);
+      if (tnVal) localStorage.setItem("tn_pdf_url", tnVal);
+
+      toggleConfig();
+      renderViewers();
+    }
+
+    function resetDefaults() {
+      localStorage.removeItem("mcc_pdf_url");
+      localStorage.removeItem("tn_pdf_url");
+      renderViewers();
+      toggleConfig();
+    }
+
+    function refreshBoth() {
+      renderViewers();
+    }
+
+    // Auto-refresh every 15 minutes (900,000 ms)
+    setInterval(() => {
+      refreshBoth();
+    }, 15 * 60 * 1000);
+
+    // Initial load
+    window.addEventListener("DOMContentLoaded", renderViewers);
+  </script>
+</body>
+</html>
