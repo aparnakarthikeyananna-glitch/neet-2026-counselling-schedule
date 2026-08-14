@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>NEET UG Round 1: MCC vs TN Schedule</title>
+  <title>NEET UG R1 Schedule Widget</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #151d2f;
-      --card-inner: #1c263c;
-      --border: #28354f;
+      --bg: #090d16;
+      --surface: #131b2e;
+      --border: #22304d;
       --mcc: #38bdf8;
       --tn: #34d399;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --highlight: rgba(56, 189, 248, 0.08);
     }
 
     * {
@@ -26,302 +26,303 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding: 0.75rem;
-      max-width: 680px;
+      padding: 6px;
       margin: 0 auto;
-      min-height: 100vh;
+      max-width: 540px;
+      font-size: 11px;
+      user-select: none;
     }
 
-    /* Header */
-    header {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .title-row {
+    /* Widget Header */
+    .widget-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 4px 6px 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
     }
 
-    h1 {
-      font-size: 1.1rem;
+    .widget-title {
+      font-size: 11.5px;
       font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .status-badge {
-      font-size: 0.7rem;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--mcc);
-      padding: 0.2rem 0.5rem;
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--tn);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--tn);
+    }
+
+    .btn-group {
+      display: flex;
       gap: 4px;
     }
 
-    .pulse {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--mcc);
-      animation: blink 1.5s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    button {
-      flex: 1;
-      background: var(--card-inner);
-      color: var(--text);
+    .btn-icon {
+      background: var(--surface);
       border: 1px solid var(--border);
-      padding: 0.55rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      color: var(--muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
       cursor: pointer;
     }
 
-    button.primary {
-      background: #2563eb;
-      border-color: #3b82f6;
-    }
-
-    /* Config Modal */
-    #configDrawer {
-      display: none;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .field {
-      margin-bottom: 0.75rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    input {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
+    .btn-icon:hover {
       color: #fff;
-      padding: 0.5rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      border-color: var(--muted);
     }
 
-    /* Milestone Cards */
-    .timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .stage-card {
-      background: var(--card-bg);
+    /* Compact Table */
+    .table-container {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 0.9rem;
-      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    .stage-header {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
     }
 
-    /* Side-by-Side Split on Mobile */
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
+    th, td {
+      padding: 6px 7px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      line-height: 1.25;
     }
 
-    .col {
-      background: var(--card-inner);
-      border-radius: 10px;
-      padding: 0.65rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-top: 3px solid transparent;
+    tr:last-child td {
+      border-bottom: none;
     }
 
-    .col.mcc { border-top-color: var(--mcc); }
-    .col.tn { border-top-color: var(--tn); }
-
-    .tag {
-      font-size: 0.68rem;
+    /* Column Headers */
+    th {
+      font-size: 10.5px;
       font-weight: 700;
       text-transform: uppercase;
-      margin-bottom: 0.35rem;
+      letter-spacing: 0.3px;
+      background: #0d1424;
     }
 
-    .col.mcc .tag { color: var(--mcc); }
-    .col.tn .tag { color: var(--tn); }
+    th.col-stage { width: 34%; color: var(--muted); }
+    th.col-mcc { width: 33%; color: var(--mcc); border-left: 1px solid var(--border); }
+    th.col-tn { width: 33%; color: var(--tn); border-left: 1px solid var(--border); }
 
-    .date-val {
-      font-size: 0.85rem;
+    /* Cells */
+    td.stage-name {
       font-weight: 600;
-      line-height: 1.25;
-      color: #ffffff;
+      color: #e2e8f0;
+      font-size: 11px;
     }
 
-    .note {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-top: 0.35rem;
+    td.cell-data {
+      border-left: 1px solid var(--border);
+    }
+
+    .date {
+      font-weight: 600;
+      color: #fff;
+      display: block;
+      font-size: 11px;
+    }
+
+    .time-badge {
+      font-size: 9.5px;
+      color: var(--muted);
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* Config Drawer (Collapsible) */
+    #configPanel {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 10px;
+    }
+
+    .config-field {
+      margin-bottom: 6px;
+    }
+
+    .config-field label {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .config-field input {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .save-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-weight: 600;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="title-row">
-      <h1>🩺 NEET UG 2026 Round 1</h1>
-      <span class="status-badge"><span class="pulse"></span> Live Sync</span>
+  <!-- Widget Top Bar -->
+  <div class="widget-bar">
+    <div class="widget-title">
+      <span class="dot"></span> NEET UG 2026 • Round 1
     </div>
-    <p style="font-size: 0.75rem; color: var(--text-muted);">Side-by-side milestone dates for MCC vs TN State Counselling</p>
-    <div class="actions">
-      <button onclick="toggleConfig()">⚙️ Source Links</button>
-      <button class="primary" onclick="refreshSchedule()">🔄 Sync Now</button>
-    </div>
-  </header>
-
-  <!-- URL Config Drawer -->
-  <div id="configDrawer">
-    <div class="field">
-      <label>🏛️ MCC Notice PDF URL</label>
-      <input type="text" id="mccInput" />
-    </div>
-    <div class="field">
-      <label>🏥 TN Selection PDF URL</label>
-      <input type="text" id="tnInput" />
-    </div>
-    <div style="display:flex; gap:0.5rem;">
-      <button class="primary" onclick="saveConfig()">Save & Reload</button>
-      <button onclick="toggleConfig()">Cancel</button>
+    <div class="btn-group">
+      <button class="btn-icon" onclick="toggleConfig()" title="Configure links">⚙️ Links</button>
+      <button class="btn-icon" onclick="refreshSchedule()" title="Refresh">🔄</button>
     </div>
   </div>
 
-  <!-- Timeline Cards -->
-  <div class="timeline" id="timelineContainer"></div>
+  <!-- Settings Panel -->
+  <div id="configPanel">
+    <div class="config-field">
+      <label>MCC Notice Link</label>
+      <input type="text" id="mccLinkInput" />
+    </div>
+    <div class="config-field">
+      <label>TN Notice Link</label>
+      <input type="text" id="tnLinkInput" />
+    </div>
+    <div style="display:flex; justify-content: flex-end; gap: 4px;">
+      <button class="save-btn" onclick="saveLinks()">Save & Apply</button>
+    </div>
+  </div>
+
+  <!-- Compact Side-by-Side Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-stage">Stage</th>
+          <th class="col-mcc">🏛️ MCC (AIQ)</th>
+          <th class="col-tn">🏥 TN State</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Injected via JavaScript -->
+      </tbody>
+    </table>
+  </div>
 
   <script>
     const DEFAULT_CONFIG = {
-      mccUrl: "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608131187512522.pdf",
-      tnUrl: "https://tnmedicalselection.net/news/12082026045717.pdf"
+      mcc: "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608131187512522.pdf",
+      tn: "https://tnmedicalselection.net/news/12082026045717.pdf"
     };
 
-    const SCHEDULE_DATA = [
+    const SCHEDULE_ROWS = [
       {
-        stage: "1. Registration & Payment",
-        icon: "📝",
-        mcc: { date: "05 Aug – 15 Aug 2026", note: "Closes 02:00 PM (Pay till 5 PM)" },
-        tn: { date: "06 Aug – 14 Aug 2026", note: "Closes 05:00 PM" }
+        stage: "Registration & Fee",
+        mccDate: "05 Aug – 15 Aug",
+        mccTime: "Upto 02:00 PM (Pay till 5 PM)",
+        tnDate: "06 Aug – 14 Aug",
+        tnTime: "Upto 05:00 PM"
       },
       {
-        stage: "2. Choice Filling & Locking",
-        icon: "🔒",
-        mcc: { date: "06 Aug – 17 Aug 2026", note: "Locking: 17 Aug (10 AM - 6 PM)" },
-        tn: { date: "15 Aug – 18 Aug 2026", note: "Locking ends 18 Aug" }
+        stage: "Choice Filling & Lock",
+        mccDate: "06 Aug – 17 Aug",
+        mccTime: "Lock: 17 Aug (10 AM-6 PM)",
+        tnDate: "15 Aug – 18 Aug",
+        tnTime: "Locking: 18 Aug"
       },
       {
-        stage: "3. Seat Allotment Process",
-        icon: "⚙️",
-        mcc: { date: "18 Aug 2026", note: "1 Day" },
-        tn: { date: "19 Aug – 20 Aug 2026", note: "2 Days" }
+        stage: "Seat Processing",
+        mccDate: "18 Aug",
+        mccTime: "1 Day",
+        tnDate: "19 Aug – 20 Aug",
+        tnTime: "2 Days"
       },
       {
-        stage: "4. Result Publication",
-        icon: "📢",
-        mcc: { date: "19 Aug 2026", note: "Provisional list on MCC portal" },
-        tn: { date: "21 Aug 2026", note: "List on tnmedicalselection" }
+        stage: "Result",
+        mccDate: "19 Aug",
+        mccTime: "Provisional List",
+        tnDate: "21 Aug",
+        tnTime: "Provisional List"
       },
       {
-        stage: "5. College Reporting / Joining",
-        icon: "🏫",
-        mcc: { date: "20 Aug – 25 Aug 2026", note: "Verification till 26 Aug" },
-        tn: { date: "22 Aug – 27 Aug 2026", note: "Upto 05:00 PM" }
+        stage: "Allotment Order",
+        mccDate: "19 Aug onwards",
+        mccTime: "Online Portal",
+        tnDate: "22 Aug onwards",
+        tnTime: "Download & Pay Fee"
+      },
+      {
+        stage: "College Joining",
+        mccDate: "20 Aug – 25 Aug",
+        mccTime: "Verify by 26 Aug",
+        tnDate: "23 Aug – 27 Aug",
+        tnTime: "Upto 05:00 PM"
       }
     ];
 
-    function loadSchedule() {
-      const container = document.getElementById("timelineContainer");
-      container.innerHTML = "";
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
 
-      SCHEDULE_DATA.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "stage-card";
-        card.innerHTML = `
-          <div class="stage-header">${item.icon} ${item.stage}</div>
-          <div class="comparison-grid">
-            <div class="col mcc">
-              <span class="tag">MCC (AIQ)</span>
-              <span class="date-val">${item.mcc.date}</span>
-              <span class="note">${item.mcc.note}</span>
-            </div>
-            <div class="col tn">
-              <span class="tag">TN Medical</span>
-              <span class="date-val">${item.tn.date}</span>
-              <span class="note">${item.tn.note}</span>
-            </div>
-          </div>
+      SCHEDULE_ROWS.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="stage-name">${row.stage}</td>
+          <td class="cell-data">
+            <span class="date">${row.mccDate}</span>
+            <span class="time-badge">${row.mccTime}</span>
+          </td>
+          <td class="cell-data">
+            <span class="date">${row.tnDate}</span>
+            <span class="time-badge">${row.tnTime}</span>
+          </td>
         `;
-        container.appendChild(card);
+        tbody.appendChild(tr);
       });
     }
 
     function toggleConfig() {
-      const drawer = document.getElementById("configDrawer");
-      drawer.style.display = drawer.style.display === "block" ? "none" : "block";
-      document.getElementById("mccInput").value = localStorage.getItem("mccUrl") || DEFAULT_CONFIG.mccUrl;
-      document.getElementById("tnInput").value = localStorage.getItem("tnUrl") || DEFAULT_CONFIG.tnUrl;
+      const panel = document.getElementById("configPanel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+      document.getElementById("mccLinkInput").value = localStorage.getItem("mccLink") || DEFAULT_CONFIG.mcc;
+      document.getElementById("tnLinkInput").value = localStorage.getItem("tnLink") || DEFAULT_CONFIG.tn;
     }
 
-    function saveConfig() {
-      localStorage.setItem("mccUrl", document.getElementById("mccInput").value);
-      localStorage.setItem("tnUrl", document.getElementById("tnInput").value);
+    function saveLinks() {
+      localStorage.setItem("mccLink", document.getElementById("mccLinkInput").value.trim());
+      localStorage.setItem("tnLink", document.getElementById("tnLinkInput").value.trim());
       toggleConfig();
-      refreshSchedule();
+      renderTable();
     }
 
     function refreshSchedule() {
-      loadSchedule();
+      renderTable();
     }
 
-    // Auto-refresh every 10 minutes
-    setInterval(refreshSchedule, 10 * 60 * 1000);
+    // Auto refresh every 15 minutes
+    setInterval(renderTable, 15 * 60 * 1000);
 
-    window.onload = () => {
-      loadSchedule();
-    };
+    window.onload = renderTable;
   </script>
 </body>
 </html>
