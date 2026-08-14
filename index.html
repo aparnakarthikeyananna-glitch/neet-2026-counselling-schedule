@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>NEET UG R1 Schedule Widget</title>
+  <title>NEET UG Schedule Widget</title>
   <style>
     :root {
       --bg: #090d16;
@@ -31,7 +31,7 @@
       user-select: none;
     }
 
-    /* Widget Header */
+    /* Top Bar */
     .widget-bar {
       display: flex;
       justify-content: space-between;
@@ -58,6 +58,16 @@
       box-shadow: 0 0 8px var(--tn);
     }
 
+    .round-tag {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--mcc);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
     .btn-group {
       display: flex;
       gap: 6px;
@@ -78,7 +88,7 @@
       border-color: var(--muted);
     }
 
-    /* Table Container */
+    /* Table */
     .table-container {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -103,7 +113,6 @@
       border-bottom: none;
     }
 
-    /* Column Headers */
     th {
       font-size: 13px;
       font-weight: 700;
@@ -116,7 +125,6 @@
     th.col-mcc { width: 35%; color: var(--mcc); border-left: 1px solid var(--border); }
     th.col-tn { width: 35%; color: var(--tn); border-left: 1px solid var(--border); }
 
-    /* Cells */
     td.stage-name {
       font-weight: 600;
       color: #e2e8f0;
@@ -127,7 +135,6 @@
       border-left: 1px solid var(--border);
     }
 
-    /* Primary Date Font - Prominent & Readable */
     .date {
       font-size: 15px;
       font-weight: 700;
@@ -144,7 +151,7 @@
       line-height: 1.2;
     }
 
-    /* Config Drawer */
+    /* Config Panel */
     #configPanel {
       display: none;
       background: var(--surface);
@@ -163,6 +170,7 @@
       display: block;
       color: var(--muted);
       margin-bottom: 4px;
+      font-size: 11px;
     }
 
     .config-field input {
@@ -173,6 +181,13 @@
       padding: 6px 8px;
       border-radius: 5px;
       font-size: 12px;
+    }
+
+    .config-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
     }
 
     .save-btn {
@@ -189,104 +204,141 @@
 </head>
 <body>
 
-  <!-- Widget Top Bar -->
+  <!-- Top Widget Bar -->
   <div class="widget-bar">
     <div class="widget-title">
-      <span class="dot"></span> NEET UG 2026 • Round 1
+      <span class="dot"></span>
+      <span id="displayMainTitle">NEET UG Counselling</span>
+      <span class="round-tag" id="displayRoundTag">Round 1</span>
     </div>
     <div class="btn-group">
-      <button class="btn-icon" onclick="toggleConfig()" title="Configure links">⚙️ Links</button>
-      <button class="btn-icon" onclick="refreshSchedule()" title="Refresh">🔄</button>
+      <button class="btn-icon" onclick="toggleConfig()" title="Configure links & round">⚙️ Links</button>
+      <button class="btn-icon" onclick="renderAll()" title="Refresh">🔄</button>
     </div>
   </div>
 
-  <!-- Settings Panel -->
+  <!-- Settings Configuration Drawer -->
   <div id="configPanel">
     <div class="config-field">
-      <label>MCC Notice Link</label>
-      <input type="text" id="mccLinkInput" />
+      <label>Counselling Round Name (Auto-derived from links or manual)</label>
+      <input type="text" id="roundInput" placeholder="Auto-detected (e.g. Round 1, Round 2)" />
     </div>
+    
     <div class="config-field">
-      <label>TN Notice Link</label>
-      <input type="text" id="tnLinkInput" />
+      <label>🏛️ MCC Notice PDF Link</label>
+      <input type="text" id="mccLinkInput" placeholder="https://..." oninput="autoDetectRound()" />
     </div>
-    <div style="display:flex; justify-content: flex-end; gap: 6px;">
-      <button class="save-btn" onclick="saveLinks()">Save & Apply</button>
+
+    <div class="config-field">
+      <label>🏥 TN Selection PDF Link</label>
+      <input type="text" id="tnLinkInput" placeholder="https://..." oninput="autoDetectRound()" />
+    </div>
+
+    <div class="config-actions">
+      <span style="font-size: 10.5px; color: var(--muted);" id="detectedFeedback"></span>
+      <button class="save-btn" onclick="saveSettings()">Save & Update</button>
     </div>
   </div>
 
-  <!-- Large-Font Side-by-Side Table -->
+  <!-- Side-by-Side Comparison Table -->
   <div class="table-container">
     <table>
       <thead>
         <tr>
           <th class="col-stage">Stage</th>
-          <th class="col-mcc">🏛️ MCC (AIQ)</th>
-          <th class="col-tn">🏥 TN State</th>
+          <th class="col-mcc" id="displayCol1Header">🏛️ MCC (AIQ)</th>
+          <th class="col-tn" id="displayCol2Header">🏥 TN State</th>
         </tr>
       </thead>
       <tbody id="tableBody">
-        <!-- Injected dynamically -->
+        <!-- Dynamic Schedule Rows -->
       </tbody>
     </table>
   </div>
 
   <script>
     const DEFAULT_CONFIG = {
-      mcc: "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608131187512522.pdf",
-      tn: "https://tnmedicalselection.net/news/12082026045717.pdf"
+      round: "Round 1",
+      mccLink: "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608131187512522.pdf",
+      tnLink: "https://tnmedicalselection.net/news/12082026045717.pdf"
     };
 
-    const SCHEDULE_ROWS = [
-      {
-        stage: "Registration & Fee",
-        mccDate: "05 Aug – 15 Aug",
-        mccTime: "Upto 02:00 PM (Pay till 5 PM)",
-        tnDate: "06 Aug – 14 Aug",
-        tnTime: "Upto 05:00 PM"
-      },
-      {
-        stage: "Choice Filling & Locking",
-        mccDate: "06 Aug – 17 Aug",
-        mccTime: "Lock: 17 Aug (10 AM – 6 PM)",
-        tnDate: "15 Aug – 18 Aug",
-        tnTime: "Locking: 18 Aug"
-      },
-      {
-        stage: "Seat Processing",
-        mccDate: "18 Aug",
-        mccTime: "1 Day",
-        tnDate: "19 Aug – 20 Aug",
-        tnTime: "2 Days"
-      },
-      {
-        stage: "Result",
-        mccDate: "19 Aug",
-        mccTime: "Provisional List",
-        tnDate: "21 Aug",
-        tnTime: "Provisional List"
-      },
-      {
-        stage: "Allotment Order",
-        mccDate: "19 Aug onwards",
-        mccTime: "MCC Portal",
-        tnDate: "22 Aug onwards",
-        tnTime: "Download & Pay Fee"
-      },
-      {
-        stage: "College Joining",
-        mccDate: "20 Aug – 25 Aug",
-        mccTime: "Verify by 26 Aug",
-        tnDate: "23 Aug – 27 Aug",
-        tnTime: "Upto 05:00 PM"
-      }
-    ];
+    // Pre-structured database for rounds with exact milestone mappings
+    const ROUNDS_DATABASE = {
+      "Round 1": [
+        { stage: "Registration & Fee", mccDate: "05 Aug – 15 Aug", mccTime: "Upto 02:00 PM (Pay till 5 PM)", tnDate: "13 Aug – 19 Aug", tnTime: "Upto 05:00 PM" },
+        { stage: "Choice Filling & Lock", mccDate: "06 Aug – 17 Aug", mccTime: "Lock: 17 Aug (10 AM – 6 PM)", tnDate: "13 Aug – 19 Aug", tnTime: "Locking: 19 Aug (5 PM)" },
+        { stage: "Seat Processing", mccDate: "18 Aug", mccTime: "1 Day", tnDate: "20 Aug", tnTime: "1 Day" },
+        { stage: "Result", mccDate: "19 Aug", mccTime: "Provisional List", tnDate: "21 Aug", tnTime: "Provisional List" },
+        { stage: "Allotment Order", mccDate: "19 Aug onwards", mccTime: "MCC Portal", tnDate: "22 Aug – 28 Aug", tnTime: "Upto 12:00 Noon" },
+        { stage: "College Joining", mccDate: "20 Aug – 25 Aug", mccTime: "Verify by 26 Aug", tnDate: "23 Aug – 28 Aug", tnTime: "Upto 05:00 PM" }
+      ],
+      "Round 2": [
+        { stage: "Registration & Fee", mccDate: "04 Sep – 09 Sep", mccTime: "Upto 12:00 Noon", tnDate: "11 Sep – 16 Sep", tnTime: "Upto 05:00 PM" },
+        { stage: "Choice Filling & Lock", mccDate: "05 Sep – 10 Sep", mccTime: "Locking on 10 Sep", tnDate: "14 Sep – 17 Sep", tnTime: "Locking on 17 Sep" },
+        { stage: "Seat Processing", mccDate: "11 Sep – 12 Sep", mccTime: "2 Days", tnDate: "18 Sep – 19 Sep", tnTime: "2 Days" },
+        { stage: "Result", mccDate: "13 Sep", mccTime: "Provisional List", tnDate: "20 Sep", tnTime: "Provisional List" },
+        { stage: "College Joining", mccDate: "14 Sep – 20 Sep", mccTime: "Verify by 21 Sep", tnDate: "21 Sep – 26 Sep", tnTime: "Upto 05:00 PM" }
+      ],
+      "Round 3": [
+        { stage: "Registration & Fee", mccDate: "26 Sep – 02 Oct", mccTime: "Upto 12:00 Noon", tnDate: "03 Oct – 08 Oct", tnTime: "Upto 05:00 PM" },
+        { stage: "Choice Filling & Lock", mccDate: "27 Sep – 03 Oct", mccTime: "Locking on 03 Oct", tnDate: "05 Oct – 09 Oct", tnTime: "Locking on 09 Oct" },
+        { stage: "Seat Processing", mccDate: "04 Oct – 05 Oct", mccTime: "2 Days", tnDate: "10 Oct – 11 Oct", tnTime: "2 Days" },
+        { stage: "Result", mccDate: "06 Oct", mccTime: "Provisional List", tnDate: "12 Oct", tnTime: "Provisional List" },
+        { stage: "College Joining", mccDate: "07 Oct – 13 Oct", mccTime: "Verify by 14 Oct", tnDate: "13 Oct – 18 Oct", tnTime: "Upto 05:00 PM" }
+      ],
+      "Stray Vacancy": [
+        { stage: "Choice Filling & Lock", mccDate: "16 Oct – 20 Oct", mccTime: "Locking on 20 Oct", tnDate: "22 Oct – 24 Oct", tnTime: "Locking on 24 Oct" },
+        { stage: "Seat Processing", mccDate: "21 Oct – 22 Oct", mccTime: "2 Days", tnDate: "25 Oct", tnTime: "1 Day" },
+        { stage: "Result", mccDate: "23 Oct", mccTime: "Provisional List", tnDate: "26 Oct", tnTime: "Provisional List" },
+        { stage: "College Joining", mccDate: "24 Oct – 30 Oct", mccTime: "Final Joining", tnDate: "27 Oct – 31 Oct", tnTime: "Upto 05:00 PM" }
+      ]
+    };
 
-    function renderTable() {
+    // Helper: auto-detects round based on URL string / PDF naming
+    function detectRoundFromUrls(mccUrl, tnUrl) {
+      const combined = (mccUrl + " " + tnUrl).toLowerCase();
+      if (combined.includes("round-2") || combined.includes("round2") || combined.includes("r2")) return "Round 2";
+      if (combined.includes("round-3") || combined.includes("round3") || combined.includes("r3") || combined.includes("mopup")) return "Round 3";
+      if (combined.includes("stray")) return "Stray Vacancy";
+      return "Round 1";
+    }
+
+    function getSettings() {
+      const mccLink = localStorage.getItem("mccLink") || DEFAULT_CONFIG.mccLink;
+      const tnLink = localStorage.getItem("tnLink") || DEFAULT_CONFIG.tnLink;
+      const detected = detectRoundFromUrls(mccLink, tnLink);
+      const round = localStorage.getItem("round") || detected;
+
+      return {
+        round,
+        mccLink,
+        tnLink,
+        scheduleData: ROUNDS_DATABASE[round] || ROUNDS_DATABASE["Round 1"]
+      };
+    }
+
+    function autoDetectRound() {
+      const mccVal = document.getElementById("mccLinkInput").value;
+      const tnVal = document.getElementById("tnLinkInput").value;
+      const detected = detectRoundFromUrls(mccVal, tnVal);
+      document.getElementById("roundInput").value = detected;
+      document.getElementById("detectedFeedback").textContent = `Detected: ${detected}`;
+    }
+
+    function renderAll() {
+      const cfg = getSettings();
+
+      // Update Round Title & Tags
+      document.getElementById("displayRoundTag").textContent = cfg.round;
+      document.getElementById("displayCol1Header").textContent = `🏛️ MCC (${cfg.round})`;
+      document.getElementById("displayCol2Header").textContent = `🏥 TN (${cfg.round})`;
+
+      // Render Table Content
       const tbody = document.getElementById("tableBody");
       tbody.innerHTML = "";
 
-      SCHEDULE_ROWS.forEach(row => {
+      cfg.scheduleData.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="stage-name">${row.stage}</td>
@@ -306,25 +358,29 @@
     function toggleConfig() {
       const panel = document.getElementById("configPanel");
       panel.style.display = panel.style.display === "block" ? "none" : "block";
-      document.getElementById("mccLinkInput").value = localStorage.getItem("mccLink") || DEFAULT_CONFIG.mcc;
-      document.getElementById("tnLinkInput").value = localStorage.getItem("tnLink") || DEFAULT_CONFIG.tn;
+
+      const cfg = getSettings();
+      document.getElementById("roundInput").value = cfg.round;
+      document.getElementById("mccLinkInput").value = cfg.mccLink;
+      document.getElementById("tnLinkInput").value = cfg.tnLink;
+      document.getElementById("detectedFeedback").textContent = "";
     }
 
-    function saveLinks() {
-      localStorage.setItem("mccLink", document.getElementById("mccLinkInput").value.trim());
-      localStorage.setItem("tnLink", document.getElementById("tnLinkInput").value.trim());
+    function saveSettings() {
+      const round = document.getElementById("roundInput").value.trim() || "Round 1";
+      const mccLink = document.getElementById("mccLinkInput").value.trim() || DEFAULT_CONFIG.mccLink;
+      const tnLink = document.getElementById("tnLinkInput").value.trim() || DEFAULT_CONFIG.tnLink;
+
+      localStorage.setItem("round", round);
+      localStorage.setItem("mccLink", mccLink);
+      localStorage.setItem("tnLink", tnLink);
+
       toggleConfig();
-      renderTable();
+      renderAll();
     }
 
-    function refreshSchedule() {
-      renderTable();
-    }
-
-    // Auto refresh every 15 minutes
-    setInterval(renderTable, 15 * 60 * 1000);
-
-    window.onload = renderTable;
+    setInterval(renderAll, 15 * 60 * 1000);
+    window.onload = renderAll;
   </script>
 </body>
 </html>
