@@ -1,1 +1,41 @@
+name: Update Counselling Schedule
 
+on:
+  push:
+    paths:
+      - 'config.json'
+      - 'parser.py'
+  schedule:
+    - cron: '0 */6 * * *' # Runs automatically every 6 hours
+  workflow_dispatch: # Allows manual 1-click trigger in GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install pypdf
+
+      - name: Run Parser
+        run: |
+          python parser.py
+
+      - name: Commit and Push if Changed
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add schedule.json
+          git commit -m "Auto-update schedule.json from latest PDF notices" || exit 0
+          git push
