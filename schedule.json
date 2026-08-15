@@ -1,0 +1,47 @@
+{
+  "title": "NEET UG 2026",
+  "round": "Round 1",
+  "last_updated": "Auto-synced from notice PDFs",
+  "rows": [
+    {
+      "key": "reg",
+      "stage": "Registration & Fee",
+      "mccDate": "26 \n  Round-1 \nSL",
+      "mccTime": "Upto 02:00 PM",
+      "tnDate": "06 Aug \u2013 14 Aug",
+      "tnTime": "Upto 05:00 PM"
+    },
+    {
+      "key": "choice",
+      "stage": "Choice Filling & Locking",
+      "mccDate": "06 Aug \u2013 17 Aug",
+      "mccTime": "Locking on 17 Aug",
+      "tnDate": "15 Aug \u2013 18 Aug",
+      "tnTime": "Locking on 18 Aug"
+    },
+    {
+      "key": "process",
+      "stage": "Seat Processing",
+      "mccDate": "18 Aug",
+      "mccTime": "1 Day",
+      "tnDate": "19 Aug \u2013 20 Aug",
+      "tnTime": "2 Days"
+    },
+    {
+      "key": "result",
+      "stage": "Result Publication",
+      "mccDate": "19 Aug",
+      "mccTime": "Provisional List",
+      "tnDate": "21 Aug",
+      "tnTime": "Provisional List"
+    },
+    {
+      "key": "joining",
+      "stage": "College Joining",
+      "mccDate": "20 Aug \u2013 25 Aug",
+      "mccTime": "Verify by 26 Aug",
+      "tnDate": "23 Aug \u2013 27 Aug",
+      "tnTime": "Upto 05:00 PM"
+    }
+  ]
+}
