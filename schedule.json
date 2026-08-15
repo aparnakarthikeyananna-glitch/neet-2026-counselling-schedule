@@ -6,8 +6,8 @@
     {
       "key": "reg",
       "stage": "Registration & Fee",
-      "mccDate": "26 \n  Round-1 \nSL",
-      "mccTime": "Upto 02:00 PM",
+      "mccDate": "5th August \u2013 15th August, 2026",
+      "mccTime": "Upto 02:00 PM (Pay till 5 PM)",
       "tnDate": "06 Aug \u2013 14 Aug",
       "tnTime": "Upto 05:00 PM"
     },
@@ -15,7 +15,7 @@
       "key": "choice",
       "stage": "Choice Filling & Locking",
       "mccDate": "06 Aug \u2013 17 Aug",
-      "mccTime": "Locking on 17 Aug",
+      "mccTime": "Lock: 17 Aug (10 AM \u2013 6 PM)",
       "tnDate": "15 Aug \u2013 18 Aug",
       "tnTime": "Locking on 18 Aug"
     },
