@@ -3,16 +3,10 @@ import urllib.request
 import io
 import pypdf
 import os
-import google.generativeai as genai
+from google import genai
 
 CONFIG_FILE = "config.json"
 OUTPUT_FILE = "schedule.json"
-
-# Configure Gemini API
-API_KEY = os.environ.get("GEMINI_API_KEY")
-if not API_KEY:
-    print("Warning: GEMINI_API_KEY environment variable not set.")
-genai.configure(api_key=API_KEY)
 
 DEFAULT_STAGES = [
     {"key": "reg", "stage": "Registration & Fee", "mccDate": "", "mccTime": "", "tnDate": "", "tnTime": ""},
@@ -35,7 +29,7 @@ def fetch_pdf_text(url):
         print(f"Warning: Failed to fetch {url}: {e}")
         return ""
 
-def extract_dates_with_ai(text, authority):
+def extract_dates_with_ai(text, authority, client):
     if not text.strip():
         return {}
 
@@ -63,9 +57,11 @@ def extract_dates_with_ai(text, authority):
     """
 
     try:
-        # Updated to gemini-3.6-flash
-        model = genai.GenerativeModel('gemini-3.6-flash')
-        response = model.generate_content(prompt)
+        # Generate content using the new client syntax
+        response = client.models.generate_content(
+            model='gemini-3.6-flash',
+            contents=prompt
+        )
         
         # Clean up response in case the model adds markdown code blocks
         result_text = response.text.strip()
@@ -80,6 +76,13 @@ def extract_dates_with_ai(text, authority):
         return {}
 
 def run():
+    # Initialize the new SDK client (it automatically picks up GEMINI_API_KEY from env variables)
+    try:
+        client = genai.Client()
+    except Exception as e:
+        print(f"Failed to initialize Gemini Client: {e}")
+        return
+
     # Load config (fallback to dummy config for testing if file missing)
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
@@ -97,8 +100,8 @@ def run():
     tn_text = fetch_pdf_text(config.get("tn_url", ""))
 
     print("Extracting schedules via AI...")
-    mcc_schedule = extract_dates_with_ai(mcc_text, "MCC (All India Quota)")
-    tn_schedule = extract_dates_with_ai(tn_text, "Tamil Nadu State Quota")
+    mcc_schedule = extract_dates_with_ai(mcc_text, "MCC (All India Quota)", client)
+    tn_schedule = extract_dates_with_ai(tn_text, "Tamil Nadu State Quota", client)
 
     output = {
         "title": config.get("title", "NEET UG 2026"),
