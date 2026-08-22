@@ -1,7 +1,7 @@
 import json
 import urllib.request
 import io
-import pypdf
+import pdfplumber
 import os
 from google import genai
 
@@ -23,8 +23,28 @@ def fetch_pdf_text(url):
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
         with urllib.request.urlopen(req, timeout=20) as resp:
             content = resp.read()
-            reader = pypdf.PdfReader(io.BytesIO(content))
-            return "\n".join([page.extract_text() or "" for page in reader.pages])
+        
+        extracted_content = []
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            for page in pdf.pages:
+                # 1. Extract tabular data and format it cleanly for the LLM
+                tables = page.extract_tables()
+                for table in tables:
+                    extracted_content.append("--- Structured Table Data ---")
+                    for row in table:
+                        # Clean newlines inside cells and separate columns with pipes
+                        clean_row = [str(cell).replace('\n', ' ').strip() if cell else "BLANK" for cell in row]
+                        extracted_content.append(" | ".join(clean_row))
+                    extracted_content.append("-----------------------------")
+                
+                # 2. Extract regular unstructured text 
+                # layout=True helps preserve basic visual spacing in paragraphs
+                text = page.extract_text(layout=True)
+                if text:
+                    extracted_content.append("--- Unstructured Text ---")
+                    extracted_content.append(text)
+
+        return "\n".join(extracted_content)
     except Exception as e:
         print(f"Warning: Failed to fetch {url}: {e}")
         return ""
@@ -35,6 +55,9 @@ def extract_dates_with_ai(text, authority, client):
 
     prompt = f"""
     You are a schedule extraction assistant. Extract the {authority} NEET UG counselling schedule dates and times from the text below.
+    Important: The text may contain tabular data (columns separated by '|') or unstructured paragraphs.
+    Only extract the dates relevant specifically to {authority}.
+    
     Map the findings to these exact 5 stages. If a stage isn't mentioned, leave the date and time strings empty.
     
     1. "reg": Registration, Payment, or Fee Submission
@@ -57,13 +80,11 @@ def extract_dates_with_ai(text, authority, client):
     """
 
     try:
-        # Generate content using the new client syntax
         response = client.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-2.5-flash', # Updated to a valid SDK model string
             contents=prompt
         )
         
-        # Clean up response in case the model adds markdown code blocks
         result_text = response.text.strip()
         if result_text.startswith("```json"):
             result_text = result_text[7:-3].strip()
@@ -76,21 +97,19 @@ def extract_dates_with_ai(text, authority, client):
         return {}
 
 def run():
-    # Initialize the new SDK client (it automatically picks up GEMINI_API_KEY from env variables)
     try:
         client = genai.Client()
     except Exception as e:
         print(f"Failed to initialize Gemini Client: {e}")
         return
 
-    # Load config (fallback to dummy config for testing if file missing)
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
     else:
         config = {
             "mcc_url": "https://cdnbbsr.s3waas.gov.in/s3e0f7a4d0ef9b84b83b693bbf3feb8e6e/uploads/2026/08/202608191403764226.pdf",
-            "tn_url": "https://tnmedicalselection.net/news/19082026233844.pdf",
+            "tn_url": "", 
             "title": "NEET UG 2026",
             "round": "Round 1"
         }
@@ -100,8 +119,8 @@ def run():
     tn_text = fetch_pdf_text(config.get("tn_url", ""))
 
     print("Extracting schedules via AI...")
-    mcc_schedule = extract_dates_with_ai(mcc_text, "MCC (All India Quota)", client)
-    tn_schedule = extract_dates_with_ai(tn_text, "Tamil Nadu State Quota", client)
+    mcc_schedule = extract_dates_with_ai(mcc_text, "All India Quota", client)
+    tn_schedule = extract_dates_with_ai(tn_text, "Tamil Nadu State Quota", client) if tn_text else {}
 
     output = {
         "title": config.get("title", "NEET UG 2026"),
@@ -110,16 +129,13 @@ def run():
         "rows": []
     }
 
-    # Merge AI results into the unified structure
     for stage_template in DEFAULT_STAGES:
         stage_key = stage_template["key"]
         
-        # Pull MCC data
         if stage_key in mcc_schedule:
             stage_template["mccDate"] = mcc_schedule[stage_key].get("date", "")
             stage_template["mccTime"] = mcc_schedule[stage_key].get("time", "")
             
-        # Pull TN data
         if stage_key in tn_schedule:
             stage_template["tnDate"] = tn_schedule[stage_key].get("date", "")
             stage_template["tnTime"] = tn_schedule[stage_key].get("time", "")
