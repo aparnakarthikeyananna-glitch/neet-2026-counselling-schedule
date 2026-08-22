@@ -8,23 +8,23 @@
       "stage": "Registration & Fee",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "",
-      "tnTime": ""
+      "tnDate": "24th August 2026",
+      "tnTime": "5 PM"
     },
     {
       "key": "choice",
       "stage": "Choice Filling & Locking",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "",
-      "tnTime": ""
+      "tnDate": "24th August 2026",
+      "tnTime": "5 PM"
     },
     {
       "key": "process",
       "stage": "Seat Processing",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "25 & 26th August 2026",
       "tnTime": ""
     },
     {
@@ -32,7 +32,7 @@
       "stage": "Result Publication",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "27th August 2026",
       "tnTime": ""
     },
     {
@@ -40,8 +40,8 @@
       "stage": "College Joining",
       "mccDate": "31st Aug., 2026",
       "mccTime": "",
-      "tnDate": "",
-      "tnTime": ""
+      "tnDate": "05th September 2026",
+      "tnTime": "5.00pm"
     }
   ]
 }
