@@ -3,6 +3,7 @@ import urllib.request
 import io
 import pdfplumber
 import os
+import time
 from google import genai
 
 CONFIG_FILE = "config.json"
@@ -122,8 +123,14 @@ def run():
     mcc_text = fetch_pdf_text(config.get("mcc_url", ""))
     tn_text = fetch_pdf_text(config.get("tn_url", ""))
 
-    print("Extracting schedules via AI...")
+    print("Extracting MCC schedule via AI...")
     mcc_schedule = extract_dates_with_ai(mcc_text, "All India Quota", client)
+    
+    # Adding a delay to respect the free tier rate limit
+    print("Pausing for 15 seconds to avoid API rate limits...")
+    time.sleep(15)
+    
+    print("Extracting TN schedule via AI...")
     tn_schedule = extract_dates_with_ai(tn_text, "Tamil Nadu State Quota", client) if tn_text else {}
 
     output = {
