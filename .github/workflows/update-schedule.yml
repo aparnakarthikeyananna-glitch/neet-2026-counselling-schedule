@@ -24,8 +24,8 @@ jobs:
       # Installed directly here instead of using a file
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install google-genai pypdf
+          pip install google-genai
+          pip install pdfplumber
 
       - name: Run parser
         env:
