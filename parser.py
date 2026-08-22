@@ -63,8 +63,8 @@ def extract_dates_with_ai(text, authority):
     """
 
     try:
-        # Use gemini-1.5-flash as it is fast, cheap, and excellent at parsing text to JSON
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # UPDATED: Using the supported model version to prevent 404 errors
+        model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         
         # Clean up response in case the model adds markdown code blocks
