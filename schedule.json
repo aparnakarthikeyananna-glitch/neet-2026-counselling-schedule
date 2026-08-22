@@ -1,0 +1,47 @@
+{
+  "title": "NEET UG 2026",
+  "round": "Round 1 - Revised",
+  "last_updated": "Auto-synced via AI extraction",
+  "rows": [
+    {
+      "key": "reg",
+      "stage": "Registration & Fee",
+      "mccDate": "",
+      "mccTime": "",
+      "tnDate": "",
+      "tnTime": ""
+    },
+    {
+      "key": "choice",
+      "stage": "Choice Filling & Locking",
+      "mccDate": "",
+      "mccTime": "",
+      "tnDate": "",
+      "tnTime": ""
+    },
+    {
+      "key": "process",
+      "stage": "Seat Processing",
+      "mccDate": "",
+      "mccTime": "",
+      "tnDate": "",
+      "tnTime": ""
+    },
+    {
+      "key": "result",
+      "stage": "Result Publication",
+      "mccDate": "",
+      "mccTime": "",
+      "tnDate": "",
+      "tnTime": ""
+    },
+    {
+      "key": "joining",
+      "stage": "College Joining",
+      "mccDate": "",
+      "mccTime": "",
+      "tnDate": "",
+      "tnTime": ""
+    }
+  ]
+}
