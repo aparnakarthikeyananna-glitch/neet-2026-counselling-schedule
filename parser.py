@@ -63,8 +63,8 @@ def extract_dates_with_ai(text, authority):
     """
 
     try:
-        # UPDATED: Using the supported model version to prevent 404 errors
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # Updated to gemini-3.6-flash
+        model = genai.GenerativeModel('gemini-3.6-flash')
         response = model.generate_content(prompt)
         
         # Clean up response in case the model adds markdown code blocks
