@@ -81,7 +81,7 @@ def extract_dates_with_ai(text, authority, client):
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash', # Updated to a valid SDK model string
+            model='gemini-3.6-flash',
             contents=prompt
         )
         
