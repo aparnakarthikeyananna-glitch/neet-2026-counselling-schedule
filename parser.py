@@ -58,13 +58,17 @@ def extract_dates_with_ai(text, authority, client):
     Important: The text may contain tabular data (columns separated by '|') or unstructured paragraphs.
     Only extract the dates relevant specifically to {authority}.
     
-    Map the findings to these exact 5 stages. If a stage isn't mentioned, leave the date and time strings empty.
+    CRITICAL INSTRUCTION FOR DATE MAPPING:
+    1. First, search for specific dates assigned to the individual activities below (e.g., specific dates for Registration, distinct dates for Choice Filling). Map them directly to their corresponding keys.
+    2. FALLBACK: If the document does NOT provide granular dates, but instead groups the activities under a broad heading like "Ist Round of Counselling" or "Round 1 Counselling" with a single date range, you MUST apply that grouped date range to the first 4 stages ("reg", "choice", "process", and "result").
+    
+    Map the findings to these exact 5 stages. If a stage isn't mentioned and there is no overarching fallback range, leave the date and time strings empty.
     
     1. "reg": Registration, Payment, or Fee Submission
     2. "choice": Choice Filling and Locking
     3. "process": Seat Processing / Processing of seat allotment
     4. "result": Result Publication / Allotment result
-    5. "joining": College Joining / Reporting to allotted institute
+    5. "joining": College Joining / Reporting / Last date of Joining
 
     Return ONLY a valid JSON object (no markdown, no backticks) with this structure:
     {{
