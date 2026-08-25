@@ -8,7 +8,7 @@
       "stage": "Registration & Fee",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "till 24th August 2026",
+      "tnDate": "24th August 2026",
       "tnTime": "till 5 PM"
     },
     {
@@ -16,7 +16,7 @@
       "stage": "Choice Filling & Locking",
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
-      "tnDate": "till 24th August 2026",
+      "tnDate": "24th August 2026",
       "tnTime": "till 5 PM"
     },
     {
@@ -40,8 +40,8 @@
       "stage": "College Joining",
       "mccDate": "31st Aug., 2026",
       "mccTime": "",
-      "tnDate": "till 05th September 2026",
-      "tnTime": "5.00pm"
+      "tnDate": "05th September 2026",
+      "tnTime": "till 5.00pm"
     }
   ]
 }
