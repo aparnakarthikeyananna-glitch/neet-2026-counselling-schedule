@@ -9,7 +9,7 @@
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
       "tnDate": "24th August 2026",
-      "tnTime": "till 5 PM"
+      "tnTime": "5 PM"
     },
     {
       "key": "choice",
@@ -17,7 +17,7 @@
       "mccDate": "4th Aug, 2026 to 21st Aug., 2026",
       "mccTime": "",
       "tnDate": "24th August 2026",
-      "tnTime": "till 5 PM"
+      "tnTime": "5 PM"
     },
     {
       "key": "process",
@@ -41,7 +41,7 @@
       "mccDate": "31st Aug., 2026",
       "mccTime": "",
       "tnDate": "05th September 2026",
-      "tnTime": "till 5.00pm"
+      "tnTime": "5.00pm"
     }
   ]
 }
