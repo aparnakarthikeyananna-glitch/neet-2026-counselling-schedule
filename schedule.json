@@ -6,41 +6,41 @@
     {
       "key": "reg",
       "stage": "Registration & Fee",
-      "mccDate": "",
+      "mccDate": "3rd Sept., 2026 to 11th Sept., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "7th Sept., 2026 to 11th Sept., 2026",
       "tnTime": ""
     },
     {
       "key": "choice",
       "stage": "Choice Filling & Locking",
-      "mccDate": "",
+      "mccDate": "3rd Sept., 2026 to 11th Sept., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "7th Sept., 2026 to 11th Sept., 2026",
       "tnTime": ""
     },
     {
       "key": "process",
       "stage": "Seat Processing",
-      "mccDate": "",
+      "mccDate": "3rd Sept., 2026 to 11th Sept., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "7th Sept., 2026 to 11th Sept., 2026",
       "tnTime": ""
     },
     {
       "key": "result",
       "stage": "Result Publication",
-      "mccDate": "",
+      "mccDate": "3rd Sept., 2026 to 11th Sept., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "7th Sept., 2026 to 11th Sept., 2026",
       "tnTime": ""
     },
     {
       "key": "joining",
       "stage": "College Joining",
-      "mccDate": "",
+      "mccDate": "18th Sept., 2026",
       "mccTime": "",
-      "tnDate": "",
+      "tnDate": "18th Sept., 2026",
       "tnTime": ""
     }
   ]
