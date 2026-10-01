@@ -8,23 +8,23 @@
       "stage": "Registration & Fee",
       "mccDate": "3rd Sept. to 8th Sept., 2026",
       "mccTime": "up to 03:00 P.M of 8th Sept. 2026 only (as per Server Time) * Payment facility will be available up to 06:00 PM of 8th Sept., 2026 (as per Server Time)",
-      "tnDate": "07-09-2026 to 08-09-2026",
-      "tnTime": "10:00 A.M. to 05:00 P.M."
+      "tnDate": "",
+      "tnTime": ""
     },
     {
       "key": "choice",
       "stage": "Choice Filling & Locking",
       "mccDate": "3rd Sept., 2026 to 9th Sept., 2026",
       "mccTime": "Choice Filling will be available upto 10:00 A.M of 9th Sept., 2026 (as per Server Time) Choice Locking will start from 04:00 P.M of 8th Sept., 2026 upto 10:00 A.M of 9th Sept., 2026 (as per Server Time)",
-      "tnDate": "09-09-2026 to 13-09-2026",
-      "tnTime": "02:00 P.M. to 02:00 P.M."
+      "tnDate": "",
+      "tnTime": ""
     },
     {
       "key": "process",
       "stage": "Seat Processing",
       "mccDate": "9th Sept., 2026 to 10th Sept., 2026",
       "mccTime": "",
-      "tnDate": "14-09-2026",
+      "tnDate": "",
       "tnTime": ""
     },
     {
@@ -32,7 +32,7 @@
       "stage": "Result Publication",
       "mccDate": "11th Sept., 2026",
       "mccTime": "",
-      "tnDate": "15-09-2026",
+      "tnDate": "",
       "tnTime": ""
     },
     {
@@ -40,8 +40,8 @@
       "stage": "College Joining",
       "mccDate": "12th Sept., 2026 to 18th Sept, 2026",
       "mccTime": "",
-      "tnDate": "18-09-2026",
-      "tnTime": "05:00 P.M."
+      "tnDate": "",
+      "tnTime": ""
     }
   ]
 }
